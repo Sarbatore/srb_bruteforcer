@@ -2,18 +2,20 @@ function BruteForce(dictionary, prefixes, suffixes, maxWords, existingHashes, kn
     prefixes = ((type(prefixes) ~= "table" or #prefixes == 0) and {""}) or prefixes
     suffixes = ((type(suffixes) ~= "table" or #suffixes == 0) and {""}) or suffixes
     maxWords = maxWords or 3
-    existingHashes = existingHashes or {}  -- TABLE DE HASH (numeriques) récupérés en jeu
+    existingHashes = existingHashes or {}
 
     local waitIteration = 100
     local waitDuration = 0
 
-    -- Convertir existingHashes en map pour lookup rapide
+    -- Map pour lookup rapide des hash existants
     local existingHashMap = {}
-    for i, hash in ipairs(existingHashes) do
-        existingHashMap[hash] = i
+    local unmatchedHashMap = {}
+    for _, hash in ipairs(existingHashes) do
+        existingHashMap[hash] = true
+        unmatchedHashMap[hash] = true
     end
 
-    -- Charger les noms connus depuis un fichier JSON
+    -- Charger les noms connus
     local knownNamesMap = {}
     local decoded = LoadJSONFile(knownNamesJsonPath)
     if decoded and type(decoded) == "table" then
@@ -36,18 +38,16 @@ function BruteForce(dictionary, prefixes, suffixes, maxWords, existingHashes, kn
                     local candidate = (rawPrefix .. baseName .. rawSuffix):upper()
                     local hash = joaat(candidate)
 
-                    -- Si le hash existe en jeu
                     if existingHashMap[hash] then
-                        table.remove(existingHashes, existingHashMap[hash])
-                        -- Et si le nom n'est pas encore connu
+                        -- Si trouvé, on enlève ce hash des non matchés
+                        unmatchedHashMap[hash] = nil
+
                         if knownNamesMap[candidate] then
                             print("[ALREADY DISCOVERED]", candidate)
                         else
                             table.insert(newValidNames, candidate)
                             print("[DISCOVERED]", candidate, hash)
                         end
-                    else
-                        --print("[INVALID]", candidate)
                     end
 
                     counter = counter + 1
@@ -71,8 +71,16 @@ function BruteForce(dictionary, prefixes, suffixes, maxWords, existingHashes, kn
 
     permute({}, dictionary, 0)
     table.sort(newValidNames)
-    return newValidNames, existingHashes
+
+    -- Extraire les hashes non trouvés
+    local unmatchedHashes = {}
+    for hash, _ in pairs(unmatchedHashMap) do
+        table.insert(unmatchedHashes, hash)
+    end
+
+    return newValidNames, unmatchedHashes
 end
+
 exports("BruteForce", BruteForce)
 
 function LoadJSONFile(jsonPath)
