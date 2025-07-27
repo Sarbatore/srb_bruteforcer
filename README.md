@@ -1,5 +1,6 @@
 # Hash Name Discovery Tool for RedM
 A generic brute-force script for RedM that helps you reverse-engineer hash values by testing thousands of potential name combinations. Whether you're trying to uncover door names, slot IDs, component names, or weapon identifiers and some other hashes — this tool is for you.
+<img width="1920" height="1080" alt="srb brute forcer" src="https://github.com/user-attachments/assets/634a11b1-7798-44a5-bc51-775bc10ed79b" />
 
 ## 📌 Disclaimer
 This tool is for educational and development purposes. Brute-force testing too many strings without control can impact game performance — use batching and wait times responsibly.
