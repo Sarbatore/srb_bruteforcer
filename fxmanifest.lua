@@ -5,12 +5,11 @@ lua54 "yes"
 
 author "Sarbatore"
 description ""
-version "1.0.0"
-
-files {
-    "data/*.json",
-}
 
 client_scripts {
     "client/*.lua",
+}
+
+server_scripts {
+    "server/*.lua",
 }
